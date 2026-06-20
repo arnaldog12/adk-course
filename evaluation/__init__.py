@@ -10,6 +10,6 @@ _pkg_dir = str(Path(__file__).parent)
 if _pkg_dir not in sys.path:
     sys.path.insert(0, _pkg_dir)
 
-from .agent import root_agent
+from .agent import root_agent  # noqa: E402
 
 __all__ = ["root_agent"]

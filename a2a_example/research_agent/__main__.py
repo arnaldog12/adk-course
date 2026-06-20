@@ -1,4 +1,4 @@
-"""Research Agent - A2A Server
+"""Research Agent - A2A Server.
 
 A specialized agent for research, information gathering, and fact-checking.
 Runs as an A2A server on localhost:9001
@@ -61,7 +61,7 @@ def main():
     print("📚 Agent specializes in research and information gathering")
     print("🔗 Agent card available at: http://localhost:9001/.well-known/agent.json")
 
-    uvicorn.run(server.build(), host='0.0.0.0', port=9001)
+    uvicorn.run(server.build(), host="0.0.0.0", port=9001)  # noqa: S104
 
 
 if __name__ == '__main__':

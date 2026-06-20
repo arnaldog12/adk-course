@@ -1,4 +1,4 @@
-"""Analysis Agent Executor - A2A Server Implementation
+"""Analysis Agent Executor - A2A Server Implementation.
 
 This agent specializes in data analysis, statistical insights, and quantitative research.
 """
@@ -118,13 +118,15 @@ Comprehensive analysis performed on the requested topic with statistical rigor.
         else:
             return """Data Analysis Agent Ready
 
-I specialize in data analysis, statistical insights, and quantitative research. Please provide specific data or metrics to analyze for detailed statistical insights and recommendations."""
+I specialize in data analysis, statistical insights, and quantitative research.
+Please provide specific data or metrics to analyze for detailed statistical insights and recommendations."""
 
 
 class AnalysisAgentExecutor(AgentExecutor):
     """A2A Agent Executor for the Analysis Agent."""
 
     def __init__(self):
+        """Initialize the AnalysisAgentExecutor."""
         self.agent = AnalysisAgent()
 
     async def execute(

@@ -1,10 +1,11 @@
-"""Document Organizer using MCP Filesystem Server
+"""Document Organizer using MCP Filesystem Server.
+
 Automatically organizes documents by type, date, and content.
 
 This demonstrates creating a specialized agent with MCP filesystem tools.
 """
 
-import os
+from pathlib import Path
 
 from google.adk.agents import Agent
 from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
@@ -22,7 +23,7 @@ def create_document_organizer_agent(base_directory: str) -> Agent:
         Agent configured for document organization with MCP filesystem tools
     """
     # Validate directory
-    if not os.path.exists(base_directory):
+    if not Path(base_directory).exists():
         raise ValueError(f"Directory does not exist: {base_directory}")
 
     # Create MCP toolset for filesystem access

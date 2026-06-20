@@ -1,4 +1,4 @@
-"""Content Creation Agent - Official ADK A2A Implementation
+"""Content Creation Agent - Official ADK A2A Implementation.
 
 This agent specializes in content creation, writing, and formatting.
 To be served via: uvicorn content_agent.agent:a2a_app --host localhost --port 8003
@@ -26,6 +26,24 @@ def create_content(content_type: str, topic: str, details: str = "") -> dict:
     """
     content_type_lower = content_type.lower()
 
+    default_findings = (
+        "Based on available research and analysis, the topic shows promising developments "
+        "with clear pathways for growth and implementation."
+    )
+    default_analysis = (
+        "Our analysis reveals that the sector is positioned for continued growth, "
+        "driven by technological advancement and increasing market demand."
+    )
+    default_report_analysis = (
+        "The analysis reveals significant opportunities balanced with manageable challenges. "
+        "Strategic positioning and execution will be critical for success."
+    )
+    default_content = (
+        f"This is comprehensive content covering various aspects of {topic}. "
+        "The material provides valuable insights and information for readers "
+        "interested in understanding this subject."
+    )
+
     if "summary" in content_type_lower:
         return {
             "status": "success",
@@ -45,7 +63,7 @@ def create_content(content_type: str, topic: str, details: str = "") -> dict:
 - Strategic implementation requires careful planning and execution
 
 **Main Findings:**
-{details if details else "Based on available research and analysis, the topic shows promising developments with clear pathways for growth and implementation."}
+{details if details else default_findings}
 
 **Recommendations:**
 - Develop comprehensive strategy aligned with market trends
@@ -74,11 +92,14 @@ The analysis supports a positive outlook with manageable risks and significant o
 
 ## Introduction
 
-{topic} represents a significant area of interest with far-reaching implications across multiple sectors. This article examines the current landscape, key developments, and future prospects.
+{topic} represents a significant area of interest with far-reaching implications across multiple sectors.
+This article examines the current landscape, key developments, and future prospects.
 
 ## Current Landscape
 
-The field of {topic} has experienced substantial growth and innovation in recent years. Key stakeholders are investing heavily in research and development, leading to breakthrough discoveries and practical applications.
+The field of {topic} has experienced substantial growth and innovation in recent years.
+Key stakeholders are investing heavily in research and development, leading to breakthrough discoveries
+and practical applications.
 
 ## Key Developments
 
@@ -90,7 +111,7 @@ Recent developments in {topic} include:
 
 ## Analysis and Insights
 
-{details if details else "Our analysis reveals that the sector is positioned for continued growth, driven by technological advancement and increasing market demand."}
+{details if details else default_analysis}
 
 ## Future Prospects
 
@@ -102,7 +123,8 @@ Looking ahead, {topic} is expected to:
 
 ## Conclusion
 
-{topic} represents a dynamic and evolving field with significant potential for impact. Stakeholders who position themselves strategically will be well-placed to benefit from future developments.
+{topic} represents a dynamic and evolving field with significant potential for impact.
+Stakeholders who position themselves strategically will be well-placed to benefit from future developments.
                 """.strip(),
                 "word_count": 350,
                 "reading_time": "3 minutes",
@@ -121,7 +143,8 @@ Looking ahead, {topic} is expected to:
 # Technical Report: {topic}
 
 ## Executive Summary
-This report provides a comprehensive analysis of {topic}, including current status, key findings, and strategic recommendations.
+This report provides a comprehensive analysis of {topic}, including current status,
+key findings, and strategic recommendations.
 
 ## Methodology
 Research conducted through multi-source analysis including:
@@ -137,7 +160,7 @@ Research conducted through multi-source analysis including:
 4. **Competitive Landscape**: Active competition driving innovation
 
 ## Detailed Analysis
-{details if details else "The analysis reveals significant opportunities balanced with manageable challenges. Strategic positioning and execution will be critical for success."}
+{details if details else default_report_analysis}
 
 ## Recommendations
 - **Short-term**: Focus on immediate implementation opportunities
@@ -168,9 +191,10 @@ Research conducted through multi-source analysis including:
 
 Content about {topic}:
 
-{details if details else f"This is comprehensive content covering various aspects of {topic}. The material provides valuable insights and information for readers interested in understanding this subject."}
+{details if details else default_content}
 
-The content covers key aspects including background information, current developments, and practical implications for stakeholders.
+The content covers key aspects including background information, current developments,
+and practical implications for stakeholders.
                 """.strip(),
                 "word_count": 100,
                 "reading_time": "1 minute",

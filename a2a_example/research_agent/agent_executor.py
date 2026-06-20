@@ -1,4 +1,4 @@
-"""Research Agent Executor - A2A Server Implementation
+"""Research Agent Executor - A2A Server Implementation.
 
 This agent specializes in research, fact-checking, and information gathering.
 """
@@ -68,13 +68,15 @@ Based on comprehensive web research:
         else:
             return """Research Agent Ready
 
-I specialize in research, fact-checking, and information gathering. Please provide a specific research query to get detailed findings with citations."""
+I specialize in research, fact-checking, and information gathering.
+Please provide a specific research query to get detailed findings with citations."""
 
 
 class ResearchAgentExecutor(AgentExecutor):
     """A2A Agent Executor for the Research Agent."""
 
     def __init__(self):
+        """Initialize the ResearchAgentExecutor."""
         self.agent = ResearchAgent()
 
     async def execute(

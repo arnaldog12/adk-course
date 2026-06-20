@@ -152,7 +152,11 @@ def before_model_callback(
 
     # Modify system instruction
     if llm_request.config and llm_request.config.system_instruction:
-        llm_request.config.system_instruction += safety_instruction
+        si = llm_request.config.system_instruction
+        if isinstance(si, types.Content):
+            si.parts = [*(si.parts or []), types.Part(text=safety_instruction)]
+        else:
+            llm_request.config.system_instruction = types.Content(parts=[types.Part(text=str(si) + safety_instruction)])
 
     # Track LLM calls
     llm_count = callback_context.state.get("user:llm_calls", 0)

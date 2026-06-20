@@ -1,4 +1,4 @@
-"""Analysis Agent - A2A Server
+"""Analysis Agent - A2A Server.
 
 A specialized agent for data analysis, statistical insights, and quantitative analysis.
 Runs as an A2A server on localhost:9002
@@ -61,7 +61,7 @@ def main():
     print("📊 Agent specializes in data analysis and statistical insights")
     print("🔗 Agent card available at: http://localhost:9002/.well-known/agent.json")
 
-    uvicorn.run(server.build(), host='0.0.0.0', port=9002)
+    uvicorn.run(server.build(), host="0.0.0.0", port=9002)  # noqa: S104
 
 
 if __name__ == '__main__':

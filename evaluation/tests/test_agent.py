@@ -128,7 +128,7 @@ class TestAgentConfiguration:
 
     def test_agent_has_tools(self):
         """Test agent has the required tools"""
-        tool_names = [tool.__name__ for tool in root_agent.tools]
+        tool_names = [getattr(tool, "name", getattr(tool, "__name__", "")) for tool in root_agent.tools]
         assert "search_knowledge_base" in tool_names
         assert "create_ticket" in tool_names
         assert "check_ticket_status" in tool_names
@@ -145,7 +145,7 @@ class TestAgentConfiguration:
     def test_agent_has_instruction(self):
         """Test agent has instruction"""
         assert root_agent.instruction is not None
-        assert len(root_agent.instruction) > 0
+        assert bool(root_agent.instruction)
 
     def test_agent_output_key(self):
         """Test agent has correct output key"""

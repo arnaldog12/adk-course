@@ -1,4 +1,4 @@
-"""Research Agent - Official ADK A2A Implementation
+"""Research Agent - Official ADK A2A Implementation.
 
 This agent specializes in web research, fact-checking, and information gathering.
 To be served via: uvicorn research_agent.agent:a2a_app --host localhost --port 8001

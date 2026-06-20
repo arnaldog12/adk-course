@@ -61,7 +61,7 @@ def main():
     print("✍️ Agent specializes in content creation and writing")
     print("🔗 Agent card available at: http://localhost:9003/.well-known/agent.json")
 
-    uvicorn.run(server.build(), host="0.0.0.0", port=9003)
+    uvicorn.run(server.build(), host="0.0.0.0", port=9003)  # noqa: S104
 
 
 if __name__ == "__main__":
