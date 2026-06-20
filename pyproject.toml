@@ -12,15 +12,17 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pyclean>=3.7.0",
+    "pyrefly>=1.1.1",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "ruff>=0.15.17",
 ]
 
 [tool.pyrefly]
-search-path = ["multi_agent_orchestration"]
+search-path = [".", "evaluation"]
 project-includes = [
-    "multi_agent_orchestration/**/*.py",
+    "**/*.py",
 ]
 python-interpreter = ".venv/bin/python"
 
