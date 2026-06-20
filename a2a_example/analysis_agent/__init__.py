@@ -1,5 +1,4 @@
-"""
-Analysis Agent Package
+"""Analysis Agent Package
 
 A2A server implementation for data analysis and statistical insights.
 """

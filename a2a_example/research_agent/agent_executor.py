@@ -1,5 +1,4 @@
-"""
-Research Agent Executor - A2A Server Implementation
+"""Research Agent Executor - A2A Server Implementation
 
 This agent specializes in research, fact-checking, and information gathering.
 """
@@ -93,7 +92,7 @@ class ResearchAgentExecutor(AgentExecutor):
                     part_data = part
                     if hasattr(part, 'root'):
                         part_data = part.root
-                        
+
                     if hasattr(part_data, 'text') and part_data.text:
                         query += part_data.text
 
@@ -106,7 +105,7 @@ class ResearchAgentExecutor(AgentExecutor):
 
         except Exception as e:
             # Send error message
-            error_message = new_agent_text_message(f"Research failed: {str(e)}")
+            error_message = new_agent_text_message(f"Research failed: {e!s}")
             await event_queue.enqueue_event(error_message)
 
     async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:

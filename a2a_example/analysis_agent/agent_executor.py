@@ -1,10 +1,10 @@
-"""
-Analysis Agent Executor - A2A Server Implementation
+"""Analysis Agent Executor - A2A Server Implementation
 
 This agent specializes in data analysis, statistical insights, and quantitative research.
 """
 
 import asyncio
+
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
 from a2a.utils import new_agent_text_message
@@ -142,7 +142,7 @@ class AnalysisAgentExecutor(AgentExecutor):
                     part_data = part
                     if hasattr(part, 'root'):
                         part_data = part.root
-                        
+
                     if hasattr(part_data, 'text') and part_data.text:
                         query += part_data.text
 
@@ -155,7 +155,7 @@ class AnalysisAgentExecutor(AgentExecutor):
 
         except Exception as e:
             # Send error message
-            error_message = new_agent_text_message(f"Analysis failed: {str(e)}")
+            error_message = new_agent_text_message(f"Analysis failed: {e!s}")
             await event_queue.enqueue_event(error_message)
 
     async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:

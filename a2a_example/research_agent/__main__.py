@@ -1,5 +1,4 @@
-"""
-Research Agent - A2A Server
+"""Research Agent - A2A Server
 
 A specialized agent for research, information gathering, and fact-checking.
 Runs as an A2A server on localhost:9001
@@ -14,12 +13,12 @@ from a2a.types import (
     AgentCard,
     AgentSkill,
 )
+
 from .agent_executor import ResearchAgentExecutor
 
 
 def main():
     """Start the Research Agent A2A server."""
-
     # Define the research skill
     research_skill = AgentSkill(
         id='research',

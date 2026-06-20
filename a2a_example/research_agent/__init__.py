@@ -1,5 +1,4 @@
-"""
-Research Agent Package
+"""Research Agent Package
 
 A2A server implementation for research and information gathering.
 """

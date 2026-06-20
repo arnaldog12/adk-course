@@ -1,5 +1,4 @@
-"""
-Analysis Agent - A2A Server
+"""Analysis Agent - A2A Server
 
 A specialized agent for data analysis, statistical insights, and quantitative analysis.
 Runs as an A2A server on localhost:9002
@@ -14,12 +13,12 @@ from a2a.types import (
     AgentCard,
     AgentSkill,
 )
+
 from .agent_executor import AnalysisAgentExecutor
 
 
 def main():
     """Start the Analysis Agent A2A server."""
-
     # Define the analysis skill
     analysis_skill = AgentSkill(
         id='analysis',
