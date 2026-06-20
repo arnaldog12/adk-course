@@ -2,6 +2,18 @@
 
 A production-ready content moderation assistant demonstrating **callbacks & guardrails** in Google ADK. This agent showcases all 6 callback types for safety, monitoring, and control flow.
 
+## Como rodar
+
+A partir da **raiz** do projeto (veja o [README principal](../README.md) para o setup inicial):
+
+```bash
+uv sync --all-groups   # uma vez
+uv run adk web         # abre http://localhost:8000
+```
+
+Abra <http://localhost:8000> e selecione **content_moderator** no menu.
+Certifique-se de ter configurado o `.env` na raiz com sua `GOOGLE_API_KEY`.
+
 ## Features
 
 ### 🛡️ Safety & Guardrails

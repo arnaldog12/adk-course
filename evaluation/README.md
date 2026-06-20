@@ -13,15 +13,17 @@ This implementation demonstrates comprehensive testing patterns for ADK agents, 
 
 ## Quick Start
 
+Rode tudo a partir da **raiz** do projeto (veja o [README principal](../README.md) para o setup).
+
 ```bash
-# Install dependencies
-make setup
+# Instalar dependências (uma vez)
+uv sync --all-groups
 
-# Run the agent in development mode
-make dev
+# Subir a interface web e selecionar "evaluation"
+uv run adk web
 
-# Run comprehensive tests
-make test
+# Rodar a suíte de testes
+uv run pytest
 ```
 
 ## Project Structure
@@ -64,7 +66,7 @@ The **Customer Support Agent** provides:
 Run individual tool and configuration tests:
 
 ```bash
-make test
+uv run pytest
 ```
 
 **Test Coverage:**
@@ -76,10 +78,10 @@ make test
 
 ### Evaluation Tests
 
-Run trajectory and response quality assessments:
+Run trajectory and response quality assessments (incluídas na suíte de testes):
 
 ```bash
-make eval
+uv run pytest
 ```
 
 **Evaluation Files:**
@@ -90,11 +92,7 @@ make eval
 
 ## Demo Prompts
 
-Try these example prompts in the ADK web interface:
-
-```bash
-make demo
-```
+Suba a interface web (`uv run adk web`), selecione **evaluation** e experimente os prompts abaixo:
 
 **Example Interactions:**
 
@@ -105,29 +103,16 @@ make demo
 
 ## Configuration
 
-1. **Copy environment template:**
-
-   ```bash
-   cp support_agent/.env.example support_agent/.env
-   ```
-
-2. **Add your API key:**
-
-   ```bash
-   # Edit support_agent/.env
-   GOOGLE_API_KEY=your_actual_api_key_here
-   ```
+A configuração da chave de API é feita uma única vez, no `.env` da **raiz** do projeto.
+Veja [Configurar a chave de API](../README.md#configurar-a-chave-de-api-env) no README principal.
 
 ## Development Commands
 
 ```bash
-make setup      # Install dependencies
-make dev        # Start ADK web interface
-make test       # Run all tests
-make test-cov   # Run tests with coverage report
-make eval       # Run evaluation tests
-make demo       # Show demo prompts
-make clean      # Clean cache files
+uv sync --all-groups   # Instalar dependências
+uv run adk web         # Subir a interface web do ADK
+uv run pytest          # Rodar todos os testes
+uv run ruff check      # Verificar o estilo de código
 ```
 
 ## Test Results
@@ -168,7 +153,7 @@ tests/test_agent.py::test_multi_turn_conversation PASSED
 
 ### Common Issues
 
-1. **Import Errors**: Ensure dependencies are installed with `make setup`
+1. **Import Errors**: Ensure dependencies are installed with `uv sync --all-groups`
 
 2. **API Key Issues**: Verify `GOOGLE_API_KEY` is set in `.env`
 
@@ -181,7 +166,7 @@ tests/test_agent.py::test_multi_turn_conversation PASSED
 Run tests with verbose output:
 
 ```bash
-pytest tests/ -v -s
+uv run pytest -v -s
 ````
 
 ## Links
@@ -194,7 +179,7 @@ pytest tests/ -v -s
 
 This implementation follows the patterns established in the ADK Training repository. For contributions:
 
-1. Ensure all tests pass: `make test`
+1. Ensure all tests pass: `uv run pytest`
 2. Add new test cases for new features
 3. Update documentation for API changes
 4. Follow the established code patterns

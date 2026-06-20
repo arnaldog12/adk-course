@@ -37,26 +37,24 @@ Final Output: Publication-ready article!
 
 ## Quick Start
 
-1. **Install dependencies:**
+Rode tudo a partir da **raiz** do projeto (veja o [README principal](../README.md)).
+
+1. **Instalar dependências:**
 
    ```bash
-   make setup
+   uv sync --all-groups
    ```
 
-2. **Configure API key:**
+2. **Configurar a chave de API:** crie o `.env` na raiz do projeto conforme
+   [Configurar a chave de API](../README.md#configurar-a-chave-de-api-env).
+
+3. **Subir a interface web:**
 
    ```bash
-   cp content_publisher/.env.example content_publisher/.env
-   # Edit content_publisher/.env and add your Google AI API key
+   uv run adk web
    ```
 
-3. **Start development server:**
-
-   ```bash
-   make dev
-   ```
-
-4. **Open [http://localhost:8000](http://localhost:8000)** and select "content_publisher"
+4. **Abra [http://localhost:8000](http://localhost:8000)** e selecione "multi_agent_orchestration"
 
 ## Example Prompts
 
