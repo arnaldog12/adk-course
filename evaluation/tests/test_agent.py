@@ -6,9 +6,9 @@ Run with: pytest tests/test_agent.py -v
 from unittest.mock import Mock
 
 import pytest
+from agent import check_ticket_status, create_ticket, root_agent, search_knowledge_base
 from dotenv import load_dotenv
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
-from support_agent.agent import check_ticket_status, create_ticket, root_agent, search_knowledge_base
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ class TestToolFunctions:
         """Setup before each test."""
         # Create a mock ToolContext for testing
         self.tool_context = Mock()
-        self.tool_context.tickets = {}
+        self.tool_context.state = {}
 
     def test_search_knowledge_base_password_reset(self):
         """Test knowledge base search for password reset."""
@@ -158,7 +158,7 @@ class TestIntegration:
     def setup_method(self):
         """Setup before each test"""
         self.tool_context = Mock()
-        self.tool_context.tickets = {}
+        self.tool_context.state = {}
 
     def test_knowledge_base_completeness(self):
         """Test that knowledge base covers expected topics"""
@@ -191,21 +191,27 @@ class TestAgentEvaluation:
     async def test_simple_kb_search(self):
         """Test simple knowledge base search evaluation"""
         await AgentEvaluator.evaluate(
-            agent_module="support_agent", eval_dataset_file_path_or_dir="tests/simple.test.json", num_runs=1
+            agent_module="evaluation.agent",
+            eval_dataset_file_path_or_dir="evaluation/tests/simple.test.json",
+            num_runs=1,
         )
 
     @pytest.mark.asyncio
     async def test_ticket_creation(self):
         """Test ticket creation flow evaluation"""
         await AgentEvaluator.evaluate(
-            agent_module="support_agent", eval_dataset_file_path_or_dir="tests/ticket_creation.test.json", num_runs=1
+            agent_module="evaluation.agent",
+            eval_dataset_file_path_or_dir="evaluation/tests/ticket_creation.test.json",
+            num_runs=1,
         )
 
     @pytest.mark.asyncio
     async def test_multi_turn_conversation(self):
         """Test complex multi-turn conversation"""
         await AgentEvaluator.evaluate(
-            agent_module="support_agent", eval_dataset_file_path_or_dir="tests/complex.evalset.json", num_runs=1
+            agent_module="evaluation.agent",
+            eval_dataset_file_path_or_dir="evaluation/tests/complex.evalset.json",
+            num_runs=1,
         )
 
 
