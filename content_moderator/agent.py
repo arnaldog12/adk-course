@@ -136,7 +136,9 @@ def before_model_callback(
                 content=types.Content(
                     parts=[
                         types.Part(
-                            text="I cannot process this request as it contains inappropriate content. Please rephrase respectfully."
+                            text="""I cannot process this request as it contains inappropriate content.
+                            Please rephrase respectfully.
+                            """
                         )
                     ],
                     role="model",
@@ -144,7 +146,9 @@ def before_model_callback(
             )
 
     # MODIFICATION: Add safety instruction
-    safety_instruction = "\n\nIMPORTANT: Do not generate harmful, biased, or inappropriate content. If the request is unclear, ask for clarification."
+    safety_instruction = """\n\nIMPORTANT: Do not generate harmful, biased, or inappropriate content.
+    If the request is unclear, ask for clarification.
+    """
 
     # Modify system instruction
     if llm_request.config and llm_request.config.system_instruction:
@@ -276,6 +280,7 @@ def generate_text(topic: str, word_count: int, tool_context: ToolContext) -> dic
     Args:
         topic: The subject to write about
         word_count: Desired number of words (1-5000)
+        tool_context: The tool context
     """
     # Tool would normally generate text here
     # For demo, just return metadata
@@ -318,7 +323,6 @@ root_agent = Agent(
 
     CAPABILITIES:
     - Generate text on any topic with specified word count
-    - Check grammar and suggest corrections
     - Provide usage statistics
 
     SAFETY:
