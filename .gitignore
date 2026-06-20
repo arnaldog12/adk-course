@@ -227,3 +227,6 @@ __marimo__/
 
 # Google ADK
 .adk/
+
+# MCP Agent
+sample_files/
