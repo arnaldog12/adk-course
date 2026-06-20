@@ -1,0 +1,155 @@
+{
+  "eval_set_id": "complex_tools_test",
+  "name": "Complex Tools Test",
+  "description": "Tests for search_knowledge_base and create_ticket tools",
+  "eval_cases": [
+    {
+      "eval_id": "search_knowledge_base_test",
+      "conversation": [
+        {
+          "invocation_id": "invocation_1",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How do I reset my password?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "args": {
+                  "query": "password reset"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "response": {
+                  "status": "success",
+                  "report": "Found password reset information",
+                  "results": [
+                    {
+                      "topic": "password reset",
+                      "content": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": "create_ticket_flow_test",
+      "conversation": [
+        {
+          "invocation_id": "invocation_1",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How do I reset my password?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "args": {
+                  "query": "password reset"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "response": {
+                  "status": "success",
+                  "report": "Found password reset information",
+                  "results": [
+                    {
+                      "topic": "password reset",
+                      "content": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "invocation_id": "invocation_2",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "That didn't work, can you help me more?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "I'm sorry to hear that the password reset didn't work. I've created a support ticket for you. You can expect a response within 2 business days."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_2",
+                "name": "create_ticket",
+                "args": {
+                  "issue": "Customer was unable to reset password using the provided instructions.",
+                  "priority": "normal"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_2",
+                "name": "create_ticket",
+                "response": {
+                  "status": "success",
+                  "report": "Ticket created successfully",
+                  "ticket": {
+                    "priority": "normal",
+                    "estimated_response": "2 business days"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "creation_timestamp": 1759974000.0
+}
