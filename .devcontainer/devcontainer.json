@@ -1,0 +1,25 @@
+{
+  "name": "ADK Course",
+  "image": "ghcr.io/astral-sh/uv:python3.12-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "postCreateCommand": "uv sync --all-groups",
+  "forwardPorts": [8000, 8001, 8002, 8003],
+  "portsAttributes": {
+    "8000": { "label": "ADK Web UI" },
+    "8001": { "label": "A2A Research Agent" },
+    "8002": { "label": "A2A Analysis Agent" },
+    "8003": { "label": "A2A Content Agent" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "charliermarsh.ruff"],
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
+      }
+    }
+  }
+}
