@@ -11,5 +11,7 @@
         ".ruff_cache": true,
         ".venv": true
     },
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": true,
     "ruff.configuration": "${workspaceFolder}/pyproject.toml"
 }
