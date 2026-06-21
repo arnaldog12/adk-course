@@ -1,0 +1,7 @@
+agent_class: ParallelAgent
+name: ParallelResearch
+description: Runs all research pipelines concurrently
+sub_agents:
+  - config_path: news_pipeline.yaml
+  - config_path: social_pipeline.yaml
+  - config_path: expert_pipeline.yaml

@@ -1,0 +1,15 @@
+agent_class: LlmAgent
+name: quote_extractor
+model: gemini-2.5-flash
+description: Extracts quotable insights
+instruction: |
+  Extract the most impactful quotes and insights from expert opinions.
+
+  **Expert Opinions:**
+  {raw_experts}
+
+  Output format:
+  EXPERT INSIGHTS:
+  • Quote 1: "..." - [Expert Name], [Credentials]
+  • Quote 2: "..." - [Expert Name], [Credentials]
+output_key: expert_quotes

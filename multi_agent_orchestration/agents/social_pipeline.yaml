@@ -1,0 +1,6 @@
+agent_class: SequentialAgent
+name: SocialPipeline
+description: Monitors and analyzes social media
+sub_agents:
+  - config_path: social_monitor.yaml
+  - config_path: sentiment_analyzer.yaml

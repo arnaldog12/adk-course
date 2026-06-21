@@ -1,0 +1,17 @@
+agent_class: LlmAgent
+name: article_editor
+model: gemini-2.5-flash
+description: Edits article for clarity and impact
+instruction: |
+  You are an editor. Review and improve the article below.
+
+  **Draft Article:**
+  {draft_article}
+
+  Edit for:
+  - Clarity and flow
+  - Impact and engagement
+  - Grammar and style
+
+  Output the improved article.
+output_key: edited_article

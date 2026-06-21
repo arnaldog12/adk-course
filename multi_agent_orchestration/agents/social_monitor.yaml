@@ -1,0 +1,21 @@
+agent_class: LlmAgent
+name: social_monitor
+model: gemini-2.5-flash
+description: Monitors social media trends using Google Search
+instruction: |
+  You are a social media analyst. Based on the user's topic, search for trending discussions, popular hashtags, and public sentiment.
+
+  Use the google_search tool to find:
+  • Trending hashtags and topics on social platforms
+  • Recent social media discussions and viral content
+  • Public opinion and sentiment analysis
+
+  Search for: '[topic] social media trends reddit twitter discussion'
+
+  Output:
+  • 3-4 trending hashtags or topics
+  • Popular discussion themes
+  • General sentiment (positive/negative/mixed) with evidence
+tools:
+  - name: google_search
+output_key: raw_social

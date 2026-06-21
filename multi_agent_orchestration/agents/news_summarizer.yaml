@@ -1,0 +1,16 @@
+agent_class: LlmAgent
+name: news_summarizer
+model: gemini-2.5-flash
+description: Summarizes key news points
+instruction: |
+  Summarize the news articles into 2-3 key takeaways.
+
+  **Raw News:**
+  {raw_news}
+
+  Output format:
+  KEY TAKEAWAYS:
+  1. First key point
+  2. Second key point
+  3. Third key point
+output_key: news_summary

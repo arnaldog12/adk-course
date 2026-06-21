@@ -1,0 +1,6 @@
+agent_class: SequentialAgent
+name: NewsPipeline
+description: Fetches and summarizes news
+sub_agents:
+  - config_path: news_fetcher.yaml
+  - config_path: news_summarizer.yaml

@@ -1,0 +1,8 @@
+agent_class: SequentialAgent
+name: ContentPublishingSystem
+description: Complete content publishing system with parallel research and sequential creation
+sub_agents:
+  - config_path: agents/parallel_research.yaml
+  - config_path: agents/article_writer.yaml
+  - config_path: agents/article_editor.yaml
+  - config_path: agents/article_formatter.yaml

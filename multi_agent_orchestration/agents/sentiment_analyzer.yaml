@@ -1,0 +1,16 @@
+agent_class: LlmAgent
+name: sentiment_analyzer
+model: gemini-2.5-flash
+description: Analyzes social sentiment
+instruction: |
+  Analyze the social media data and extract key insights.
+
+  **Social Media Data:**
+  {raw_social}
+
+  Output format:
+  SOCIAL INSIGHTS:
+  • Trending: [hashtags/topics]
+  • Sentiment: [overall mood]
+  • Key Themes: [main discussion points]
+output_key: social_insights

@@ -1,0 +1,24 @@
+agent_class: LlmAgent
+name: article_writer
+model: gemini-2.5-flash
+description: Writes article draft from all research
+instruction: |
+  You are a professional writer. Write an engaging article using ALL the research below.
+
+  **News Summary:**
+  {news_summary}
+
+  **Social Insights:**
+  {social_insights}
+
+  **Expert Quotes:**
+  {expert_quotes}
+
+  Write a 4-5 paragraph article that:
+  - Opens with a compelling hook
+  - Incorporates news, social trends, and expert opinions naturally
+  - Uses expert quotes effectively
+  - Has a strong conclusion
+
+  Output ONLY the article text.
+output_key: draft_article

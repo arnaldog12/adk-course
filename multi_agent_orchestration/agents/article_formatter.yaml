@@ -1,0 +1,19 @@
+agent_class: LlmAgent
+name: article_formatter
+model: gemini-2.5-flash
+description: Formats article for publication
+instruction: |
+  Format the article for publication with proper markdown.
+
+  **Article:**
+  {edited_article}
+
+  Add:
+  - Compelling title (# heading)
+  - Byline (By: AI Content Team)
+  - Section headings where appropriate (## subheadings)
+  - Proper formatting (bold, italic, quotes)
+  - Publication date placeholder
+
+  Output the final formatted article.
+output_key: published_article

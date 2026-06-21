@@ -1,0 +1,6 @@
+agent_class: SequentialAgent
+name: ExpertPipeline
+description: Finds and extracts expert opinions
+sub_agents:
+  - config_path: expert_finder.yaml
+  - config_path: quote_extractor.yaml
