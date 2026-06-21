@@ -154,16 +154,6 @@ Módulos disponíveis no menu:
 O módulo **a2a_example** (comunicação entre agentes) tem um fluxo próprio com vários
 servidores. Veja [a2a_example/README.md](a2a_example/README.md).
 
-## Testes e lint
-
-```bash
-# Rodar a suíte de testes
-uv run pytest
-
-# Verificar estilo de código
-uv run ruff check
-```
-
 ## Solução de problemas
 
 - **`uv: command not found` / não reconhecido**: feche e reabra o terminal após instalar o
@@ -173,3 +163,9 @@ uv run ruff check
 - **Porta 8000 em uso**: rode em outra porta, por exemplo `uv run adk web --port 8080`.
 - **Primeira execução lenta**: na primeira vez o `uv` baixa o Python e as dependências; as
   próximas execuções são rápidas.
+
+> *Made with ❤️ for the ADK Community*
+
+> Heavily inspired in this [amazing training][source].
+
+[source]: https://github.com/raphaelmansuy/adk_training

@@ -1,123 +1,157 @@
-# Tutorial 06: Multi-Agent Systems - Content Publishing System
+# Multi-Agent Orchestration - Sistema de publicação de conteúdo
 
-This implementation demonstrates sophisticated multi-agent orchestration by combining Sequential and Parallel agents in nested workflows. The content publishing system runs parallel research pipelines (news, social, expert) then creates content through sequential refinement (write, edit, format).
+Sistema multiagente que combina **agentes paralelos e sequenciais aninhados**
+no Google ADK. Três pipelines de pesquisa rodam em paralelo (notícias, redes
+sociais e especialistas) e, em seguida, três agentes em sequência produzem o
+conteúdo final (rascunho, edição e formatação).
 
-## Overview
+## Funcionalidades do agente
 
-The content publishing system showcases:
+- **Pesquisa multi-fonte em paralelo**: notícias atuais, tendências em redes
+  sociais e opiniões de especialistas, todas obtidas ao mesmo tempo
+- **Síntese sequencial**: o conteúdo é refinado passo a passo
+  (escrita → edição → formatação)
+- **Compartilhamento de estado entre agentes**: cada sub-agente grava sua
+  saída no estado da sessão e os agentes seguintes leem dali
+- **Saída final em Markdown** com título, byline, subtítulos e citações
+- Uso real do tool **Google Search** dentro dos agentes pesquisadores
 
-- **Nested Agent Orchestration**: Sequential agents inside Parallel agents
-- **Multi-Phase Workflows**: Parallel research → Sequential content creation
-- **State Management**: Complex data flow between nested agent layers
-- **Production-Ready Architecture**: Real-world content generation pipeline
+## Fluxo de execução dos agentes
 
-## Architecture
+```mermaid
+flowchart TD
+    U([Pergunta do usuário<br/>'Escreva um artigo sobre IA na saúde']) --> ROOT
 
+    subgraph ROOT[ContentPublishingSystem - SequentialAgent raiz]
+        direction TB
+
+        subgraph PR[Fase 1 - ParallelResearch ParallelAgent]
+            direction LR
+            subgraph NP[NewsPipeline - SequentialAgent]
+                direction TB
+                NF[news_fetcher] --> NS[news_summarizer]
+            end
+            subgraph SP[SocialPipeline - SequentialAgent]
+                direction TB
+                SM[social_monitor] --> SA[sentiment_analyzer]
+            end
+            subgraph EP[ExpertPipeline - SequentialAgent]
+                direction TB
+                EF[expert_finder] --> QE[quote_extractor]
+            end
+        end
+
+        PR --> AW[article_writer<br/>Fase 2 - rascunho]
+        AW --> AE[article_editor<br/>Fase 3 - edição]
+        AE --> AF[article_formatter<br/>Fase 4 - formato]
+    end
+
+    AF --> OUT([Artigo pronto para publicação])
+
+    NF -. grava .-> RN[(state.raw_news)]
+    NS -. grava .-> SUM[(state.news_summary)]
+    SM -. grava .-> RS[(state.raw_social)]
+    SA -. grava .-> SI[(state.social_insights)]
+    EF -. grava .-> RE[(state.raw_experts)]
+    QE -. grava .-> EQ[(state.expert_quotes)]
+    AW -. grava .-> DA[(state.draft_article)]
+    AE -. grava .-> EA[(state.edited_article)]
+    AF -. grava .-> PA[(state.published_article)]
 ```
-User Query: "Write article about AI in healthcare"
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│  PHASE 1: Parallel Research (3 Sequential Pipelines)    │
-├─────────────────────────────────────────────────────────┤
-│  News Pipeline:    fetch → summarize → news_summary     │
-│  Social Pipeline:  monitor → analyze → social_insights  │ ← ALL RUN
-│  Expert Pipeline:  find → extract → expert_quotes       │   AT ONCE!
-└─────────────────────────────────────────────────────────┘
-    ↓ (waits for ALL 3 to complete)
-┌─────────────────────────────────────────────────────────┐
-│  PHASE 2: Sequential Content Creation                   │
-├─────────────────────────────────────────────────────────┤
-│  Writer:    combines all research → draft_article       │
-│  Editor:    reviews draft → edited_article              │ ← ONE AT
-│  Formatter: adds markdown → published_article           │   A TIME
-└─────────────────────────────────────────────────────────┘
-    ↓
-Final Output: Publication-ready article!
+
+> O `ParallelResearch` só termina quando os 3 pipelines acabam. Cada
+> sub-agente grava sua saída no estado da sessão usando `output_key`,
+> e os agentes seguintes leem dali via `{var}` na `instruction`.
+
+### Fluxo de estado entre os agentes
+
+1. A pesquisa em paralelo escreve no estado:
+   `news_summary`, `social_insights`, `expert_quotes`.
+2. O `article_writer` lê os três e grava `draft_article`.
+3. O `article_editor` lê `draft_article` e grava `edited_article`.
+4. O `article_formatter` lê `edited_article` e grava `published_article`.
+
+## Conceitos abordados do ADK
+
+- **`SequentialAgent`** - executa sub-agentes em ordem, aguardando o anterior
+- **`ParallelAgent`** - executa sub-agentes em paralelo, aguardando todos
+- **Aninhamento de orquestrações**: `Sequential` dentro de `Parallel` dentro
+  de `Sequential` (raiz)
+- **`output_key`** - cada sub-agente grava sua resposta em uma chave do
+  estado da sessão
+- **Templating em `instruction`** - uso de `{news_summary}`, `{raw_news}`
+  etc. para injetar valores do estado no prompt
+- **Tool `google_search`** - ferramenta nativa do ADK usada pelos agentes
+  pesquisadores
+- **Identificação automática do `root_agent`** pelo ADK CLI/web
+
+## Descrição dos sub-agentes e ferramentas
+
+### Sub-agentes
+
+| Sub-agente           | Tipo            | Lê do estado                                     | Grava em                |
+| -------------------- | --------------- | ------------------------------------------------ | ----------------------- |
+| `news_fetcher`       | `Agent`         | -                                                | `raw_news`              |
+| `news_summarizer`    | `Agent`         | `raw_news`                                       | `news_summary`          |
+| `social_monitor`     | `Agent`         | -                                                | `raw_social`            |
+| `sentiment_analyzer` | `Agent`         | `raw_social`                                     | `social_insights`       |
+| `expert_finder`      | `Agent`         | -                                                | `raw_experts`           |
+| `quote_extractor`    | `Agent`         | `raw_experts`                                    | `expert_quotes`         |
+| `article_writer`     | `Agent`         | `news_summary`, `social_insights`, `expert_quotes` | `draft_article`       |
+| `article_editor`     | `Agent`         | `draft_article`                                  | `edited_article`        |
+| `article_formatter`  | `Agent`         | `edited_article`                                 | `published_article`     |
+| `NewsPipeline`       | `SequentialAgent` | -                                              | -                       |
+| `SocialPipeline`     | `SequentialAgent` | -                                              | -                       |
+| `ExpertPipeline`     | `SequentialAgent` | -                                              | -                       |
+| `ParallelResearch`   | `ParallelAgent`   | -                                              | -                       |
+| `ContentPublishingSystem` | `SequentialAgent` (raiz) | -                                  | -                       |
+
+### Ferramentas
+
+| Ferramenta      | Usada por                                       | O que faz                                  |
+| --------------- | ----------------------------------------------- | ------------------------------------------ |
+| `google_search` | `news_fetcher`, `social_monitor`, `expert_finder` | Busca real na web via tool nativo do ADK |
+
+Os agentes de síntese (`*_summarizer`, `*_analyzer`, `quote_extractor`,
+`article_*`) não têm ferramentas - operam apenas com o LLM e os valores do
+estado interpolados na `instruction`.
+
+## Exemplos de prompts
+
+- `"Escreva um artigo sobre inteligência artificial na saúde"`
+- `"Crie um artigo sobre adoção de energia renovável"`
+- `"Escreva sobre o futuro do trabalho remoto"`
+- `"Crie um artigo explicando avanços em computação quântica"`
+
+## Como rodar
+
+A partir da **raiz** do projeto (veja o [README principal](../README.md)
+para o setup inicial):
+
+```bash
+uv sync --all-groups   # uma vez
+uv run adk web         # abre http://localhost:8000
 ```
 
-## Quick Start
+Abra <http://localhost:8000> e selecione **multi_agent_orchestration** no
+menu. Confirme que o `.env` da raiz está preenchido com sua `GOOGLE_API_KEY`.
 
-Rode tudo a partir da **raiz** do projeto (veja o [README principal](../README.md)).
+## Próximos passos
 
-1. **Instalar dependências:**
+Sugestões de extensão para praticar:
 
-   ```bash
-   uv sync --all-groups
-   ```
-
-2. **Configurar a chave de API:** crie o `.env` na raiz do projeto conforme
-   [Configurar a chave de API](../README.md#configurar-a-chave-de-api-env).
-
-3. **Subir a interface web:**
-
-   ```bash
-   uv run adk web
-   ```
-
-4. **Abra [http://localhost:8000](http://localhost:8000)** e selecione "multi_agent_orchestration"
-
-## Example Prompts
-
-Try these prompts to see multi-agent orchestration in action:
-
-- `"Write an article about artificial intelligence in healthcare"`
-- `"Create an article about renewable energy adoption"`
-- `"Write about the future of remote work"`
-- `"Create an article explaining quantum computing breakthroughs"`
-
-## How It Works
-
-### Phase 1: Parallel Research
-
-The system runs three research pipelines simultaneously:
-
-- **News Pipeline**: Fetches current articles → Summarizes key points
-- **Social Pipeline**: Monitors trends → Analyzes sentiment
-- **Expert Pipeline**: Finds opinions → Extracts quotes
-
-### Phase 2: Sequential Content Creation
-
-After all research completes, content is created through sequential refinement:
-
-- **Writer**: Synthesizes all research into a draft article
-- **Editor**: Improves clarity, flow, and impact
-- **Formatter**: Adds publication formatting and structure
-
-### Performance Benefits
-
-- **Without orchestration**: ~90 seconds (9 agents sequentially)
-- **With multi-agent orchestration**: ~35 seconds (6 research agents parallel + 3 creation sequential)
-- **Speedup**: ~2.6x faster with sophisticated parallel processing
-
-### State Flow
-
-1. **Parallel Research** saves to state:
-   - `news_summary` (from news pipeline)
-   - `social_insights` (from social pipeline)
-   - `expert_quotes` (from expert pipeline)
-
-2. **Sequential Creation** reads from state:
-   - Writer: `{news_summary}`, `{social_insights}`, `{expert_quotes}`
-   - Editor: `{draft_article}`
-   - Formatter: `{edited_article}`
-
-## Learning Outcomes
-
-After completing this tutorial, you'll understand:
-
-- ✅ **Nested Agent Orchestration**: Sequential inside Parallel agents
-- ✅ **Multi-Phase Workflows**: Parallel research + sequential creation
-- ✅ **Complex State Management**: Data flow in nested architectures
-- ✅ **Production Architectures**: Real-world content generation patterns
-- ✅ **Performance Optimization**: Strategic parallelization for speed
-
-## Links
-
-- **Tutorial**: [Tutorial 06: Multi-Agent Systems][source]
-- **ADK Documentation**: google.github.io/adk-docs/
-
----
-
-_Built with ❤️ for the ADK community_
-
-source: https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/README.md
+- **Adicionar um 4º pipeline de pesquisa** em paralelo (ex.: pipeline de
+  dados estatísticos ou pipeline de papers acadêmicos), gravando em
+  `state["data_summary"]` e referenciando esse novo valor no prompt do
+  `article_writer`.
+- **Trocar o `ParallelAgent` por `LoopAgent`** num dos pipelines para
+  refinar a pesquisa em iterações até atingir um critério de qualidade.
+- **Substituir o `article_editor` por um `LlmAgent` que avalia e
+  re-escreve**, devolvendo o controle ao `article_writer` se a nota for
+  baixa - introduzindo um ciclo de feedback.
+- **Adicionar um agente revisor de fatos** após o `article_writer` que
+  usa `google_search` para validar afirmações antes de seguir para o
+  editor.
+- **Medir o ganho real da paralelização**: instrumentar com
+  `time.time()` em `before_agent_callback`/`after_agent_callback` e
+  comparar com uma versão totalmente sequencial.

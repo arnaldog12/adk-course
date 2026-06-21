@@ -1,189 +1,160 @@
-# Tutorial 10: Evaluation & Testing - Working Implementation
+# Evaluation - Avaliação e testes de agentes
 
-This is the complete working implementation of **Tutorial 10: Evaluation & Testing** from the ADK Training repository.
+Agente único de **atendimento ao cliente** usado como base para demonstrar
+padrões de teste e avaliação no Google ADK: testes unitários das ferramentas,
+validação da configuração do agente, integração e avaliação automatizada de
+**trajetória** e **qualidade da resposta**.
 
-## Overview
+## Funcionalidades do agente
 
-This implementation demonstrates comprehensive testing patterns for ADK agents, including:
+- **Busca em base de conhecimento**: responde perguntas frequentes (reset de
+  senha, reembolso, frete, conta, billing e suporte técnico)
+- **Criação de tickets** com prioridade (`low`, `normal`, `high`, `urgent`)
+  e tempo de resposta estimado
+- **Listagem de tickets da sessão** com filtros opcionais por status e
+  prioridade
+- **Atualização de tickets** (status, prioridade ou descrição)
+- **Consulta de status** de um ticket existente pelo ID
+- **Persistência por usuário**: tickets ficam guardados em
+  `state["user:tickets"]` e sobrevivem entre turnos da mesma sessão
 
-- **Unit Tests**: Individual tool testing with pytest
-- **Integration Tests**: Multi-step workflow validation
-- **Evaluation Tests**: Trajectory and response quality assessment
-- **Configuration Tests**: Agent setup validation
+## Conceitos abordados do ADK
 
-## Quick Start
+- **`output_key`** - a resposta final do agente é gravada em
+  `state["support_response"]`
+- **Estado da sessão** com prefixo `user:` para persistir tickets entre
+  turnos
+- **`AgentEvaluator`** - executa avaliações declarativas a partir de
+  arquivos JSON
+- **Arquivos `.test.json`** - casos de teste de turno único ou
+  multi-step com a sequência esperada de ferramentas
+- **Arquivos `.evalset.json`** - conjuntos de avaliação multi-turno
+- **`test_config.json`** - define os critérios de avaliação
+  (`tool_trajectory_avg_score`, `response_match_score`)
+- **Testes Pytest** combinados com testes async do `AgentEvaluator`
 
-Rode tudo a partir da **raiz** do projeto (veja o [README principal](../README.md) para o setup).
+## Descrição das ferramentas
 
-```bash
-# Instalar dependências (uma vez)
-uv sync --all-groups
+| Ferramenta             | Argumentos                                              | O que faz |
+| ---------------------- | ------------------------------------------------------- | --------- |
+| `search_knowledge_base` | `query: str`                                           | Busca artigos relevantes em uma base interna fixa |
+| `create_ticket`        | `issue: str`, `priority: str = "normal"`                | Cria um ticket com ID `TICK-XXXXXXXX` e estimativa de resposta |
+| `list_tickets`         | `status?: str`, `priority?: str`                        | Lista os tickets da sessão, com filtros opcionais |
+| `update_ticket`        | `ticket_id: str`, `status?`, `priority?`, `issue?`      | Atualiza um ou mais campos de um ticket existente |
+| `check_ticket_status`  | `ticket_id: str`                                        | Retorna a situação atual de um ticket pelo ID |
 
-# Subir a interface web e selecionar "evaluation"
-uv run adk web
+Valores válidos:
 
-# Rodar a suíte de testes
-uv run pytest
-```
+- `priority`: `low`, `normal`, `high`, `urgent`
+- `status`: `open`, `in_progress`, `resolved`, `closed`
 
-## Project Structure
+## Exemplos de prompts
 
-```text
-tutorial10/
-├── support_agent/           # Agent implementation
-│   ├── __init__.py         # Package exports
-│   ├── agent.py            # Customer support agent
-│   └── .env.example        # Environment template
-├── tests/                  # Comprehensive test suite
-│   ├── test_agent.py       # pytest test suite
-│   ├── test_config.json    # Evaluation criteria
-│   ├── simple.test.json    # Basic evaluation test
-│   ├── ticket_creation.test.json  # Workflow test
-│   └── complex.evalset.json       # Multi-turn test
-├── requirements.txt        # Python dependencies
-├── Makefile               # Development commands
-└── README.md              # This file
-```
+- `"Como faço para resetar minha senha?"`
+- `"Minha conta foi completamente bloqueada!"` (gera ticket urgente)
+- `"Qual é a política de reembolso?"`
+- `"Crie um ticket de prioridade alta sobre erro 500 ao fazer checkout"`
+- `"Liste todos os meus tickets abertos"`
+- `"Mude o ticket TICK-ABC123 para resolved"`
+- `"Verifique o status do ticket TICK-ABC123"`
 
-## Agent Features
+## Testes e avaliação
 
-The **Customer Support Agent** provides:
-
-- **Knowledge Base Search**: Answers common customer questions
-- **Ticket Creation**: Creates support tickets with priority levels
-- **Ticket Status Checks**: Monitors existing ticket progress
-
-### Available Tools
-
-1. `search_knowledge_base(query)` - Search for answers
-2. `create_ticket(issue, priority)` - Create support tickets
-3. `check_ticket_status(ticket_id)` - Check ticket status
-
-## Testing
-
-### Unit Tests
-
-Run individual tool and configuration tests:
+Rode toda a suíte a partir da **raiz** do projeto:
 
 ```bash
 uv run pytest
 ```
 
-**Test Coverage:**
+A suíte cobre:
 
-- ✅ Tool function behavior (16 tests)
-- ✅ Agent configuration validation (6 tests)
-- ✅ Integration workflows (2 tests)
-- ✅ Evaluation framework tests (3 async tests)
+- Testes unitários das ferramentas (`TestToolFunctions`)
+- Validação da configuração do agente (`TestAgentConfiguration`)
+- Fluxos de integração (`TestIntegration`)
+- Avaliação de trajetória e resposta (`TestAgentEvaluation`,
+  via `AgentEvaluator`)
 
-### Evaluation Tests
+Arquivos de avaliação:
 
-Run trajectory and response quality assessments (incluídas na suíte de testes):
+- `tests/simple.test.json` - busca simples na base de conhecimento
+- `tests/ticket_creation.test.json` - fluxo de criação de ticket
+- `tests/complex.evalset.json` - conversa de múltiplos turnos
+- `tests/test_config.json` - critérios de avaliação
+
+Métricas:
+
+- **Trajectory score** (0,0-1,0) - precisão da sequência de ferramentas
+  chamadas pelo agente
+- **Response score** (0,0-1,0) - similaridade da resposta final com a
+  esperada (0,9+ excelente, 0,7-0,8 bom)
+
+Comandos úteis:
 
 ```bash
-uv run pytest
+uv run pytest -v -s     # testes com saída detalhada
+uv run ruff check       # verifica estilo de código
 ```
 
-**Evaluation Files:**
+### Rodando via CLI (`adk eval`)
 
-- `simple.test.json` - Basic knowledge base search
-- `ticket_creation.test.json` - Multi-step ticket workflow
-- `complex.evalset.json` - Multi-turn conversation
-
-## Demo Prompts
-
-Suba a interface web (`uv run adk web`), selecione **evaluation** e experimente os prompts abaixo:
-
-**Example Interactions:**
-
-1. **Password Reset**: "How do I reset my password?"
-2. **Urgent Issue**: "My account is completely locked!"
-3. **Policy Question**: "What's your refund policy?"
-4. **Status Check**: "Check status of ticket TICK-ABC123"
-
-## Configuration
-
-A configuração da chave de API é feita uma única vez, no `.env` da **raiz** do projeto.
-Veja [Configurar a chave de API](../README.md#configurar-a-chave-de-api-env) no README principal.
-
-## Development Commands
+Você também pode executar uma avaliação direto pela CLI, sem passar por
+Pytest. A partir da **raiz** do projeto:
 
 ```bash
-uv sync --all-groups   # Instalar dependências
-uv run adk web         # Subir a interface web do ADK
-uv run pytest          # Rodar todos os testes
-uv run ruff check      # Verificar o estilo de código
+uv run adk eval \
+  --config_file_path evaluation/tests/test_config.json \
+  --print_detailed_results \
+  evaluation \
+  evaluation/tests/simple.test.json
 ```
 
-## Test Results
+Assinatura do comando:
 
-**Expected Test Output:**
+```
+adk eval [OPTIONS] AGENT_MODULE_FILE_PATH [EVAL_SET_FILE_PATH_OR_ID]...
+```
 
-````
-**Expected Test Output:**
+- `AGENT_MODULE_FILE_PATH`: caminho para a **pasta** que contém o
+  `__init__.py` com `root_agent` (aqui, `evaluation`). Não aponte para
+  `evaluation/agent.py` -- o ADK espera o diretório do módulo.
+- `EVAL_SET_FILE_PATH_OR_ID`: um ou mais arquivos `.test.json` /
+  `.evalset.json` (ex.: `evaluation/tests/simple.test.json`).
+- `--config_file_path`: aponta para o `test_config.json` (critérios como
+  `tool_trajectory_avg_score` e `response_match_score`). É opcional;
+  sem ele, o ADK usa os critérios padrão. **Não confunda com o eval set.**
+- `--print_detailed_results`: imprime a tabela detalhada por invocação.
 
-```text
-tests/test_agent.py::TestToolFunctions::test_search_knowledge_base_password_reset PASSED
-tests/test_agent.py::TestToolFunctions::test_create_ticket_normal_priority PASSED
-tests/test_agent.py::TestAgentConfiguration::test_agent_name PASSED
-tests/test_agent.py::TestIntegration::test_ticket_creation_workflow PASSED
-tests/test_agent.py::test_simple_kb_search PASSED
-tests/test_agent.py::test_ticket_creation PASSED
-tests/test_agent.py::test_multi_turn_conversation PASSED
+Os resultados ficam salvos em `evaluation/.adk/eval_history/`.
 
-=============== 28 passed in 8.43s ===============
-````
+## Como rodar
 
-````
-
-## Evaluation Metrics
-
-**Trajectory Score**: Measures tool call accuracy (0.0-1.0)
-
-- 1.0 = Perfect tool sequence match
-- 0.8 = Good match with minor variations
-
-**Response Score**: Measures answer quality (0.0-1.0)
-
-- 0.9+ = Excellent match
-- 0.7-0.8 = Good match
-- 0.5-0.6 = Acceptable match
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Import Errors**: Ensure dependencies are installed with `uv sync --all-groups`
-
-2. **API Key Issues**: Verify `GOOGLE_API_KEY` is set in `.env`
-
-3. **Test Failures**: Check that all dependencies are compatible
-
-4. **Evaluation Errors**: Ensure test JSON files are valid
-
-### Debug Mode
-
-Run tests with verbose output:
+A partir da **raiz** do projeto (veja o [README principal](../README.md)
+para o setup inicial):
 
 ```bash
-uv run pytest -v -s
-````
+uv sync --all-groups   # uma vez
+uv run adk web         # abre http://localhost:8000
+```
 
-## Links
+Abra <http://localhost:8000> e selecione **evaluation** no menu.
+Confirme que o `.env` da raiz está preenchido com sua `GOOGLE_API_KEY`.
 
-- **Tutorial**: [Tutorial 10: Evaluation & Testing](../../../docs/tutorial/10_evaluation_testing.md)
-- **ADK Documentation**: <https://google.github.io/adk-docs/>
-- **Google AI Studio**: <https://aistudio.google.com/>
+## Próximos passos
 
-## Contributing
+Sugestões de extensão para praticar:
 
-This implementation follows the patterns established in the ADK Training repository. For contributions:
-
-1. Ensure all tests pass: `uv run pytest`
-2. Add new test cases for new features
-3. Update documentation for API changes
-4. Follow the established code patterns
-
----
-
-_This implementation demonstrates production-ready testing patterns for ADK agents, with 28 comprehensive tests covering unit testing, integration testing, and evaluation frameworks._
+- **Criar um novo `.evalset.json`** com uma conversa multi-turno que
+  combina várias ferramentas (ex.: criar um ticket, listar e depois
+  atualizar o ticket criado), e rodar com o `AgentEvaluator`.
+- **Ajustar os critérios de avaliação** em `tests/test_config.json`
+  (`tool_trajectory_avg_score`, `response_match_score`) e observar como
+  o resultado dos testes muda.
+- **Adicionar uma nova ferramenta** ao agente (ex.: `delete_ticket`) e
+  cobrir com testes unitários, de integração e um `.test.json` de
+  avaliação.
+- **Expandir a base de conhecimento** em `tools.py` para tópicos novos
+  (ex.: política de troca, garantia) e criar um `.test.json` que valida
+  a resposta correta.
+- **Plugar uma base real**: trocar o dicionário `KNOWLEDGE_BASE` por uma
+  busca em embedding/vector store e ajustar os testes para mockar a
+  chamada externa.
