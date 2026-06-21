@@ -75,14 +75,11 @@ flowchart TD
 
 - **`SequentialAgent`** - executa sub-agentes em ordem, aguardando o anterior
 - **`ParallelAgent`** - executa sub-agentes em paralelo, aguardando todos
-- **Aninhamento de orquestrações**: `Sequential` dentro de `Parallel` dentro
-  de `Sequential` (raiz)
-- **`output_key`** - cada sub-agente grava sua resposta em uma chave do
-  estado da sessão
-- **Templating em `instruction`** - uso de `{news_summary}`, `{raw_news}`
-  etc. para injetar valores do estado no prompt
-- **Tool `google_search`** - ferramenta nativa do ADK usada pelos agentes
-  pesquisadores
+- **Aninhamento de orquestrações**: `Sequential` dentro de `Parallel` dentro de `Sequential` (raiz)
+- **`output_key`** - cada sub-agente grava sua resposta em uma chave do estado da sessão
+- **Templating em `instruction`** - uso de `{news_summary}`, `{raw_news}` etc. para injetar valores do estado no prompt
+- **Configuração Declarativa via YAML** - uso de arquivos de configuração YAML (`root_agent.yaml` e subagentes na pasta `agents/`) para modularizar, gerenciar e instanciar os agentes através do utilitário `config_agent_utils.from_config`, sem necessidade de código Python imperativo de acoplamento
+- **Tool `google_search`** - ferramenta nativa do ADK usada pelos agentes pesquisadores
 - **Identificação automática do `root_agent`** pelo ADK CLI/web
 
 ## Descrição dos sub-agentes e ferramentas
@@ -91,15 +88,15 @@ flowchart TD
 
 | Sub-agente           | Tipo            | Lê do estado                                     | Grava em                |
 | -------------------- | --------------- | ------------------------------------------------ | ----------------------- |
-| `news_fetcher`       | `Agent`         | -                                                | `raw_news`              |
-| `news_summarizer`    | `Agent`         | `raw_news`                                       | `news_summary`          |
-| `social_monitor`     | `Agent`         | -                                                | `raw_social`            |
-| `sentiment_analyzer` | `Agent`         | `raw_social`                                     | `social_insights`       |
-| `expert_finder`      | `Agent`         | -                                                | `raw_experts`           |
-| `quote_extractor`    | `Agent`         | `raw_experts`                                    | `expert_quotes`         |
-| `article_writer`     | `Agent`         | `news_summary`, `social_insights`, `expert_quotes` | `draft_article`       |
-| `article_editor`     | `Agent`         | `draft_article`                                  | `edited_article`        |
-| `article_formatter`  | `Agent`         | `edited_article`                                 | `published_article`     |
+| `news_fetcher`       | `LlmAgent`      | -                                                | `raw_news`              |
+| `news_summarizer`    | `LlmAgent`      | `raw_news`                                       | `news_summary`          |
+| `social_monitor`     | `LlmAgent`      | -                                                | `raw_social`            |
+| `sentiment_analyzer` | `LlmAgent`      | `raw_social`                                     | `social_insights`       |
+| `expert_finder`      | `LlmAgent`      | -                                                | `raw_experts`           |
+| `quote_extractor`    | `LlmAgent`      | `raw_experts`                                    | `expert_quotes`         |
+| `article_writer`     | `LlmAgent`      | `news_summary`, `social_insights`, `expert_quotes` | `draft_article`       |
+| `article_editor`     | `LlmAgent`      | `draft_article`                                  | `edited_article`        |
+| `article_formatter`  | `LlmAgent`      | `edited_article`                                 | `published_article`     |
 | `NewsPipeline`       | `SequentialAgent` | -                                              | -                       |
 | `SocialPipeline`     | `SequentialAgent` | -                                              | -                       |
 | `ExpertPipeline`     | `SequentialAgent` | -                                              | -                       |
@@ -135,6 +132,31 @@ uv run adk web         # abre http://localhost:8000
 
 Abra <http://localhost:8000> e selecione **multi_agent_orchestration** no
 menu. Confirme que o `.env` da raiz está preenchido com sua `GOOGLE_API_KEY`.
+
+## Estrutura do Módulo
+
+O sistema foi modularizado usando a declaração declarativa via arquivos YAML do ADK, organizando a estrutura de arquivos da seguinte forma:
+
+```text
+multi_agent_orchestration/
+├── README.md
+├── agent.py               # Script principal que inicia o root_agent
+├── root_agent.yaml        # Configuração raiz (SequentialAgent)
+└── agents/                # Configurações de pipelines e subagentes
+    ├── parallel_research.yaml  # Orquestrador de pesquisa concorrente (ParallelAgent)
+    ├── news_pipeline.yaml      # Pipeline sequencial de notícias
+    ├── news_fetcher.yaml       # Buscador de notícias (LlmAgent com google_search)
+    ├── news_summarizer.yaml    # Sumarizador de notícias (LlmAgent)
+    ├── social_pipeline.yaml    # Pipeline sequencial de redes sociais
+    ├── social_monitor.yaml     # Monitor de tendências sociais (LlmAgent com google_search)
+    ├── sentiment_analyzer.yaml # Analisador de sentimento (LlmAgent)
+    ├── expert_pipeline.yaml    # Pipeline sequencial de opiniões de especialistas
+    ├── expert_finder.yaml      # Localizador de especialistas (LlmAgent com google_search)
+    ├── quote_extractor.yaml    # Extrator de citações (LlmAgent)
+    ├── article_writer.yaml     # Redator principal (LlmAgent)
+    ├── article_editor.yaml     # Editor de estilo e gramática (LlmAgent)
+    └── article_formatter.yaml  # Formatador final em Markdown (LlmAgent)
+```
 
 ## Próximos passos
 
