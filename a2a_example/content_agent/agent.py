@@ -257,7 +257,7 @@ Formatted in plain text for universal compatibility.
 
 # Main content agent that will be served via A2A
 root_agent = Agent(
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     name="content_writer",
     description="Creates written content and summaries",
     instruction="""

@@ -35,8 +35,6 @@ logger = logging.getLogger(__name__)
 BLOCKED_WORDS = [
     "racista",
     "ódio",
-    "offensive-term",
-    "inappropriate-word",
 ]
 
 # PII patterns to filter
