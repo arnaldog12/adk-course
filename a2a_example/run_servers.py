@@ -64,7 +64,7 @@ def kill_process_on_port(port: int) -> None:
             for pid in pids_to_kill:
                 print(f"  [Windows] Encerrando processo PID {pid} na porta {port}...", flush=True)
                 subprocess.run(  # noqa: S603
-                    ["taskkill", "/F", "/PID", pid],
+                    ["taskkill", "/F", "/PID", pid],  # noqa: S607
                     check=False,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
